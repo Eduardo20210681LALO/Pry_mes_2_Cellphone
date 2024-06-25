@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clasificador precio de Celulares</title>
+    <!-- Include the Tailwind CSS CDN link -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* Estilo adicional para el formulario */
+        @media (min-width: 640px) {
+            .form-container {
+                max-width: 640px;
+            }
+        }
+    </style>
+    <script>
+        function clasificarCelular(event) {
+            event.preventDefault();
+            const resoloution = document.getElementById('resoloution').value;
+            const ppi = document.getElementById('ppi').value;
+            const ram = document.getElementById('ram').value;
+            const Front_Cam = document.getElementById('Front_Cam').value;
+            const battery = document.getElementById('battery').value;
+            const thickness = document.getElementById('thickness').value;
+
+            fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `resoloution=${resoloution}&ppi=${ppi}&ram=${ram}&Front_Cam=${Front_Cam}&battery=${battery}&thickness=${thickness}`,
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        document.getElementById('resultado').innerText = 'Error: ' + data.error;
+                    } else {
+                        document.getElementById('resultado').innerText = 'El celular tiene un precio de: ' + data.categoria;
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('resultado').innerText = 'Error en la solicitud.';
+                    console.error('Error:', error);
+                });
+        }
+    </script>
+</head>
+
+<body class="bg-gray-100 p-8">
+    <div class="form-container mx-auto">
+        <h1 class="text-2xl mb-4">Clasificador de Celulares</h1>
+        <form id="formulario" onsubmit="clasificarCelular(event)" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+
+            <div class="mb-4">
+                <label for="resoloution" class="block text-gray-700 text-sm font-bold mb-2">Resolución:</label>
+                <input type="text" id="resoloution" name="resoloution" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+
+            <div class="mb-4">
+                <label for="ppi" class="block text-gray-700 text-sm font-bold mb-2">PPI:</label>
+                <input type="text" id="ppi" name="ppi" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+
+            <div class="mb-4">
+                <label for="ram" class="block text-gray-700 text-sm font-bold mb-2">RAM:</label>
+                <input type="text" id="ram" name="ram" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+
+            <div class="mb-4">
+                <label for="Front_Cam" class="block text-gray-700 text-sm font-bold mb-2">Cámara Frontal:</label>
+                <input type="text" id="Front_Cam" name="Front_Cam" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+
+            <div class="mb-4">
+                <label for="battery" class="block text-gray-700 text-sm font-bold mb-2">Batería:</label>
+                <input type="text" id="battery" name="battery" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+
+            <div class="mb-4">
+                <label for="thickness" class="block text-gray-700 text-sm font-bold mb-2">Grosor:</label>
+                <input type="text" id="thickness" name="thickness" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+
+            <div class="flex items-center justify-between">
+                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Enviar</button>
+            </div>
+
+        </form>
+        <p id="resultado" class="text-gray-800"></p>
+    </div>
+</body>
+
+</html>
